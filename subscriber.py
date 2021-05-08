@@ -4,19 +4,53 @@ from concurrent.futures import TimeoutError
 publisher = pubsub_v1.PublisherClient()
 subscriber = pubsub_v1.SubscriberClient()
 
+
+
 # TODO(developer)
 project_id = "gcplayproject"
 topic_id = "firsttopic"
-subscription_id = "pullsub"
+subscription_id = "one-sub-1"
 
+
+project_path = f"projects/{project_id}"
 topic_path = publisher.topic_path(project_id, topic_id)
 subscription_path = subscriber.subscription_path(project_id, subscription_id)
 
-def createsub():
+def createpullsub():
     with subscriber:
         subscription = subscriber.create_subscription(
             request={"name": subscription_path, "topic": topic_path}
         )
+
+
+def listsubinproject():
+    with subscriber:
+        for subscription in subscriber.list_subscriptions(request={"project": project_path}):
+            print(subscription.name)
+    
+def listsubintopic():
+    response = publisher.list_topic_subscriptions(request={"topic": topic_path})
+    for subscription in response:
+        print(subscription)
+
+def deletesubscription():
+    with subscriber:
+        subscriber.delete_subscription(request={"subscription": subscription_path})
+
+
+
+def createpushsub():
+   # endpoint = yourendpoint
+    push_config = pubsub_v1.types.PushConfig(push_endpoint=endpoint)
+    with subscriber:
+    subscription = subscriber.create_subscription(
+        request={
+            "name": subscription_path,
+            "topic": topic_path,
+            "push_config": push_config,
+        }
+    )
+
 
 
 def getmessage():
@@ -62,8 +96,12 @@ def asyncgetmessage():
 
 
 if __name__=="__main__":
-   # createsub():
+   # createpullsub():
     #getmessage()
-    asyncgetmessage()
+   # asyncgetmessage()
+   #listsubinproject()
+   #listsubintopic()
+   deletesubscription()
+
 
     
