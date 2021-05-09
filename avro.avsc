@@ -1,0 +1,18 @@
+{
+ "type" : "record",
+ "name" : "Userdata",
+ "fields" : [
+   {
+     "name" : "Username",
+     "type" : "string"
+   },
+   {
+     "name" : "ID",
+     "type" : "long"
+   },
+   {
+     "name" : "City",
+     "type" : "string"
+   }
+ ]
+}
