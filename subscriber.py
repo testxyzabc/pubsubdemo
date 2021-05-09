@@ -9,7 +9,7 @@ subscriber = pubsub_v1.SubscriberClient()
 # TODO(developer)
 project_id = "gcplayproject"
 topic_id = "firsttopic"
-subscription_id = "one-sub-1"
+subscription_id = "pushsub"
 
 
 project_path = f"projects/{project_id}"
@@ -21,6 +21,7 @@ def createpullsub():
         subscription = subscriber.create_subscription(
             request={"name": subscription_path, "topic": topic_path}
         )
+
 
 
 def listsubinproject():
@@ -38,18 +39,41 @@ def deletesubscription():
         subscriber.delete_subscription(request={"subscription": subscription_path})
 
 
+def createpullsubwithfilter():
+    def callback(message):
+        print(f"Received {message}.")
+        if message.attributes:
+        print("Attributes:")
+        for key in message.attributes:
+            value = message.attributes.get(key)
+            print(f"{key}: {value}")
+        message.ack()  
+    streaming_pull_future = subscriber.subscribe(subscription_path, callback=callback)
+    # Wrap subscriber in a 'with' block to automatically call close() when done.
+   # print(streaming_pull_future)
+    with subscriber:
+        try:
+            # When `timeout` is not set, result() will block indefinitely,
+            # unless an exception is encountered first.
+            streaming_pull_future.result(timeout=10)
+            #redice the timeout to 1 and show that it cancels it
+        except TimeoutError:
+            streaming_pull_future.cancel()   
+    
+
+
 
 def createpushsub():
-   # endpoint = yourendpoint
+    endpoint = "https://pubsub-dot-gcplayproject.uc.r.appspot.com/pubsub/push"
     push_config = pubsub_v1.types.PushConfig(push_endpoint=endpoint)
     with subscriber:
-    subscription = subscriber.create_subscription(
-        request={
-            "name": subscription_path,
-            "topic": topic_path,
-            "push_config": push_config,
-        }
-    )
+        subscription = subscriber.create_subscription(
+            request={
+                "name": subscription_path,
+                "topic": topic_path,
+                "push_config": push_config,
+            }
+        )
 
 
 
@@ -98,10 +122,11 @@ def asyncgetmessage():
 if __name__=="__main__":
    # createpullsub():
     #getmessage()
-   # asyncgetmessage()
+   #asyncgetmessage()
    #listsubinproject()
    #listsubintopic()
-   deletesubscription()
+   #deletesubscription()
+   createpushsub()
 
 
     

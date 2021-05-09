@@ -26,8 +26,23 @@ def sendmessage():
     print(data)
     publisher.publish(topic_path, data)
 
+def sendmessagewithattribute():
+    data = "first message"
+    data = data.encode("utf-8")
+    publisher.publish(topic_path, data, name='himanshu')
+
+#deb batchsettings():
+  #  from google.cloud import pubsub
+  #  from google.cloud.pubsub import types
+
+   # client = pubsub.PublisherClient(
+  #      batch_settings=types.BatchSettings(max_messages=500),
+   # )
+
+
 if __name__=="__main__":
  #   deletetopic()
     #createtopic()
     #listtopics()
-    sendmessage()
+    #sendmessage()
+    sendmessagewithattribute()
